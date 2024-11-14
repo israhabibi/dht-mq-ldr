@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Sensor Data</h1>
+
+    <!-- Gauge for Latest Data -->
+    <div id="gauge"></div>
+
+    <!-- History Chart -->
+    <h2>Last Week's History (Temperature)</h2>
+    <div id="history-chart"></div>
+
+    <!-- Daily Summary Chart -->
+    <h2>Daily Summary (Temperature)</h2>
+    <div id="daily-summary-chart"></div>
+
+    <script>
+        // Fetch latest data and display on gauge
+        fetch('/latest_data')
+            .then(response => response.json())
+            .then(data => {
+                // Temperature Gauge
+                const tempGaugeData = {
+                    type: "indicator",
+                    mode: "gauge+number",
+                    value: data.temperature,
+                    title: { text: "Latest Temperature (°C)", font: { size: 24 } },
+                    gauge: { axis: { range: [null, 50] } },
+                    domain: { row: 0, column: 0 } // Align to the left
+                };
+
+                // Humidity Gauge
+                const humidityGaugeData = {
+                    type: "indicator",
+                    mode: "gauge+number",
+                    value: data.humidity,
+                    title: { text: "Latest Humidity (%)", font: { size: 24 } },
+                    gauge: { axis: { range: [null, 100] } },
+                    domain: { row: 0, column: 1 } // Align to the left
+                };
+
+                // MQ2 Value Gauge
+                const mq2GaugeData = {
+                    type: "indicator",
+                    mode: "gauge+number",
+                    value: data.mq2_value,
+                    title: { text: "Latest MQ2 Value", font: { size: 24 } },
+                    gauge: { axis: { range: [null, 1024] } },
+                    domain: { row: 1, column: 0 } // Align to the left
+                };
+
+                // MQ135 Value Gauge
+                const mq135GaugeData = {
+                    type: "indicator",
+                    mode: "gauge+number",
+                    value: data.mq135_value,
+                    title: { text: "Latest MQ135 Value", font: { size: 24 } },
+                    gauge: { axis: { range: [null, 1024] } },
+                    domain: { row: 1, column: 1 } // Align to the left
+                };
+
+                // LDR Value Gauge
+                const ldrGaugeData = {
+                    type: "indicator",
+                    mode: "gauge+number",
+                    value: data.ldr_value,
+                    title: { text: "Latest LDR Value", font: { size: 24 } },
+                    gauge: { axis: { range: [null, 1024] } },
+                    domain: { row: 2, column: 0 } // Align to the left
+                };
+
+                // Layout for the gauges with specific positioning for each element
+                const layout = {
+                    grid: { rows: 3, columns: 2, pattern: 'independent' },
+                    height: 900,
+                    width: 600,
+                    margin: { t: 50, b: 50, l: 50, r: 50 },
+                    showlegend: false
+                };
+
+                // Plot all the gauges in a 2x3 grid layout
+                Plotly.newPlot('gauge', [
+                    tempGaugeData,
+                    humidityGaugeData,
+                    mq2GaugeData,
+                    mq135GaugeData,
+                    ldrGaugeData
+                ], layout);
+            });
+
+
+        // Fetch last week's history and display
+        fetch('/history_last_week')
+            .then(response => response.json())
+            .then(data => {
+                const hours = data.map(item => item.hour);
+                const minTemps = data.map(item => item.min_temp);
+                const maxTemps = data.map(item => item.max_temp);
+                const avgTemps = data.map(item => item.avg_temp);
+
+                const historyData = [
+                    {
+                        x: hours,
+                        y: minTemps,
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: 'Min Temp'
+                    },
+                    {
+                        x: hours,
+                        y: maxTemps,
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: 'Max Temp'
+                    },
+                    {
+                        x: hours,
+                        y: avgTemps,
+                        type: 'scatter',
+                        mode: 'lines+markers',
+                        name: 'Avg Temp'
+                    }
+                ];
+
+                const historyLayout = {
+                    title: 'Last Week\'s Temperature History',
+                    xaxis: { title: 'Hour' },
+                    yaxis: { title: 'Temperature (°C)' }
+                };
+
+                Plotly.newPlot('history-chart', historyData, historyLayout);
+            });
+
+        // Fetch daily summary and display
+        fetch('/daily_summary')
+            .then(response => response.json())
+            .then(data => {
+                const days = data.map(item => item.day);
+                const minTemps = data.map(item => item.min_temp);
+                const maxTemps = data.map(item => item.max_temp);
+                const avgTemps = data.map(item => item.avg_temp);
+
+                const dailySummaryData = [
+                    {
+                        x: days,
+                        y: minTemps,
+                        type: 'bar',
+                        name: 'Min Temp'
+                    },
+                    {
+                        x: days,
+                        y: maxTemps,
+                        type: 'bar',
+                        name: 'Max Temp'
+                    },
+                    {
+                        x: days,
+                        y: avgTemps,
+                        type: 'bar',
+                        name: 'Avg Temp'
+                    }
+                ];
+
+                const dailySummaryLayout = {
+                    title: 'Daily Temperature Summary',
+                    xaxis: { title: 'Day' },
+                    yaxis: { title: 'Temperature (°C)' }
+                };
+
+                Plotly.newPlot('daily-summary-chart', dailySummaryData, dailySummaryLayout);
+            });
+    </script>
+</body>
+</html>
