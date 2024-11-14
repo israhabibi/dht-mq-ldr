@@ -51,7 +51,7 @@
                     mode: "gauge+number",
                     value: data.mq2_value,
                     title: { text: "Latest MQ2 Value", font: { size: 24 } },
-                    gauge: { axis: { range: [null, 1024] } },
+                    gauge: { axis: { range: [null, 100] } },
                     domain: { row: 1, column: 0 } // Align to the left
                 };
 
@@ -61,7 +61,7 @@
                     mode: "gauge+number",
                     value: data.mq135_value,
                     title: { text: "Latest MQ135 Value", font: { size: 24 } },
-                    gauge: { axis: { range: [null, 1024] } },
+                    gauge: { axis: { range: [null, 100] } },
                     domain: { row: 1, column: 1 } // Align to the left
                 };
 
@@ -71,7 +71,7 @@
                     mode: "gauge+number",
                     value: data.ldr_value,
                     title: { text: "Latest LDR Value", font: { size: 24 } },
-                    gauge: { axis: { range: [null, 1024] } },
+                    gauge: { axis: { range: [null, 100] } },
                     domain: { row: 2, column: 0 } // Align to the left
                 };
 
@@ -79,7 +79,7 @@
                 const layout = {
                     grid: { rows: 3, columns: 2, pattern: 'independent' },
                     height: 900,
-                    width: 600,
+                    width: 1024,
                     margin: { t: 50, b: 50, l: 50, r: 50 },
                     showlegend: false
                 };
