@@ -3,7 +3,7 @@
 #include "credentials.h"  // Include your WiFi credentials
 
 // DHT Sensor setup
-#define DHTPIN 23  // Pin connected to the DHT22 sensor
+#define DHTPIN 14  // Pin connected to the DHT22 sensor
 #define DHTTYPE DHT22
 
 DHT dht(DHTPIN, DHTTYPE);
