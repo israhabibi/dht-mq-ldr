@@ -1,0 +1,3 @@
+.env
+log/
+arduino/dht-mq-ldr/credentials.h
