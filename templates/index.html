@@ -13,7 +13,7 @@
     <div id="gauge"></div>
 
     <!-- History Chart -->
-    <h2>Last Week's History (Temperature)</h2>
+    <h2>Last Week's History (MQ2)</h2>
     <div id="history-chart"></div>
 
     <!-- Daily Summary Chart -->
@@ -65,19 +65,9 @@
                     domain: { row: 1, column: 1 } // Align to the left
                 };
 
-                // LDR Value Gauge
-                const ldrGaugeData = {
-                    type: "indicator",
-                    mode: "gauge+number",
-                    value: data.ldr_value,
-                    title: { text: "Latest LDR Value", font: { size: 24 } },
-                    gauge: { axis: { range: [null, 100] } },
-                    domain: { row: 2, column: 0 } // Align to the left
-                };
-
                 // Layout for the gauges with specific positioning for each element
                 const layout = {
-                    grid: { rows: 3, columns: 2, pattern: 'independent' },
+                    grid: { rows: 2, columns: 2, pattern: 'independent' },
                     height: 900,
                     width: 1024,
                     margin: { t: 50, b: 50, l: 50, r: 50 },
@@ -89,53 +79,40 @@
                     tempGaugeData,
                     humidityGaugeData,
                     mq2GaugeData,
-                    mq135GaugeData,
-                    ldrGaugeData
+                    mq135GaugeData
                 ], layout);
             });
 
 
-        // Fetch last week's history and display
-        fetch('/history_last_week')
-            .then(response => response.json())
-            .then(data => {
-                const hours = data.map(item => item.hour);
-                const minTemps = data.map(item => item.min_temp);
-                const maxTemps = data.map(item => item.max_temp);
-                const avgTemps = data.map(item => item.avg_temp);
+            fetch('/history_last_week')
+                .then(response => response.json())
+                .then(data => {
+                    const traces = data.map(item => ({
+                        y: item.mq2_values,
+                        type: 'box',
+                        name: item.hour,
+                        boxpoints: 'all',       // Show all points
+                        jitter: 0.3,            // Spread the points for visibility
+                        pointpos: 0,            // Center points within each box
+                        marker: { opacity: 0.6, color: 'gray' },  // Adjust point transparency for better visibility
+                        width: 0.6,              // Increase the box width for better visibility
+                        showlegend: false
+                    }));
 
-                const historyData = [
-                    {
-                        x: hours,
-                        y: minTemps,
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        name: 'Min Temp'
-                    },
-                    {
-                        x: hours,
-                        y: maxTemps,
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        name: 'Max Temp'
-                    },
-                    {
-                        x: hours,
-                        y: avgTemps,
-                        type: 'scatter',
-                        mode: 'lines+markers',
-                        name: 'Avg Temp'
-                    }
-                ];
+                    const layout = {
+                        title: 'Last Week\'s MQ2 Value Distribution by Hour',
+                        xaxis: {
+                            title: 'Hour',
+                            tickangle: -45,
+                            automargin: true
+                        },
+                        boxmode: 'group' , // Group boxes side by side for each hour
+                        showlegend: false
+                    };
 
-                const historyLayout = {
-                    title: 'Last Week\'s Temperature History',
-                    xaxis: { title: 'Hour' },
-                    yaxis: { title: 'Temperature (°C)' }
-                };
+                    Plotly.newPlot('history-chart', traces, layout);
+                });
 
-                Plotly.newPlot('history-chart', historyData, historyLayout);
-            });
 
         // Fetch daily summary and display
         fetch('/daily_summary')

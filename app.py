@@ -142,28 +142,28 @@ def get_history_last_week():
         
         query = """
         SELECT
-            date_trunc('hour', timestamp) AS hour,
-            MIN(temperature) AS min_temp,
-            MAX(temperature) AS max_temp,
-            AVG(temperature) AS avg_temp
+            to_char(timestamp,'HH24') AS hour,
+            mq2_value
         FROM dht_mq_ldr
         WHERE timestamp > NOW() - INTERVAL '7 days'
-        GROUP BY hour
         ORDER BY hour;
         """
         cursor.execute(query)
         history_data = cursor.fetchall()
 
-        result = []
+        # Organize data by hour
+        result = {}
         for row in history_data:
-            result.append({
-                "hour": row[0].strftime('%Y-%m-%d %H:%M:%S'),
-                "min_temp": row[1],
-                "max_temp": row[2],
-                "avg_temp": row[3]
-            })
+            hour = row[0]
+            mq2_value = row[1]
+            if hour not in result:
+                result[hour] = []
+            result[hour].append(mq2_value)
         
-        return jsonify(result)
+        # Format data for JSON response
+        response_data = [{"hour": hour, "mq2_values": values} for hour, values in result.items()]
+        
+        return jsonify(response_data)
     except (Exception, psycopg2.DatabaseError) as error:
         logging.error(f"Error fetching history data: {error}")
         return jsonify({"error": "Error fetching history data"}), 500
