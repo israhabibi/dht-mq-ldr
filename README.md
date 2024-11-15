@@ -11,7 +11,8 @@ This project demonstrates a system for acquiring and processing data from a DHT1
 
 ## Software Components:
 
-* **Microcontroller Firmware:** (Specify the programming language, e.g., Arduino IDE with C++).  The firmware reads data from the sensors, processes it (e.g., calibration, filtering), and formats it for transmission.
+* **Microcontroller Firmware:** 
+
 * **(Optional) Data Processing/Visualization:**  A separate script or application (e.g., Python with libraries like matplotlib or a web application) can be used to receive, process, and visualize the sensor data.
 * **(Optional) Remote Server:**  A server (e.g., using a cloud platform like AWS IoT Core or a self-hosted solution) can be used to store and manage the sensor data.
 
